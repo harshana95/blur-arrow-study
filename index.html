@@ -65,6 +65,11 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .handback { display: grid; gap: 10px; }
 .handback p { margin: 0; max-width: 78ch; }
 .handback textarea { width: 100%; min-height: 7.5em; box-sizing: border-box; font-family: var(--font-mono); font-size: 0.78rem; border: 1px solid var(--line); border-radius: 6px; padding: 8px; background: var(--bg); color: var(--ink); resize: vertical; }
+dialog.thanks { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--ink); padding: 22px 24px; width: min(420px, calc(100vw - 48px)); box-sizing: border-box; font-family: var(--font-body); }
+dialog.thanks::backdrop { background: rgba(10, 16, 22, 0.55); }
+dialog.thanks h2 { font-size: 1.25rem; margin: 0 0 8px; }
+dialog.thanks p { margin: 0 0 10px; }
+dialog.thanks .actions { justify-content: flex-end; margin-top: 6px; }
 .strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 5px; }
 .q { font-family: var(--font-mono); font-size: 0.76rem; padding: 4px 0; text-align: center; border-radius: 4px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); cursor: pointer; }
 .q.done { background: var(--done-soft); border-color: var(--done); color: var(--ink); }
@@ -153,6 +158,13 @@ th { font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; colo
     <div class="strip" id="strip"></div>
     <p class="cap">Green = done, blue = started, dashed = optional. Click any number to go back to a photo.</p>
   </section>
+
+  <dialog class="thanks" id="thanks" aria-labelledby="thankshead">
+    <h2 id="thankshead">Thank you!</h2>
+    <p>Your arrows help us test whether a video can be rebuilt from one blurred photo, moving the way a person says it should.</p>
+    <p class="hint" id="thanksmsg"></p>
+    <div class="actions"><button type="button" class="primary" id="thanksclose">Close</button></div>
+  </dialog>
 
   <section class="panel" id="organiser" hidden aria-label="Organiser view">
     <h2>Who has drawn so far</h2>
@@ -349,7 +361,11 @@ async function saveNext() {
   const ok = await persist();
   if (ok || !S.ref || S.readonly) {
     const n = nextTodo(S.idx);
-    if (n >= 0) go(n); else { refresh(); say("All photos are done. Thank you for drawing."); if (S.handback) openHandback(); }
+    if (n >= 0) go(n); else {
+      refresh(); say("All photos are done. Thank you for drawing.");
+      if (S.handback) openHandback();
+      showThanks(S.handback ? (SUBMIT_URL ? "Sending your arrows…" : "All photos are done. One more step: send your arrows as shown on the page behind this message.") : "All photos are done and saved.");
+    }
   } else refresh();
 }
 $("save").addEventListener("click", saveNext);
@@ -432,10 +448,25 @@ function reportSubmit() {
     $("hbintro").textContent = left
       ? "Some photos could not be sent, maybe because you are offline. Press Send again, or copy the text below and send it to the person who gave you this link."
       : "All your arrows are sent. Thank you. You can close this page, or go back and draw more.";
+    if ($("thanks").open) $("thanksmsg").textContent = left
+      ? (done - left) + " of " + done + " photos were sent. Close this message and press Send again."
+      : "All " + done + " photos you drew on were sent. You can close this page.";
   });
 }
 $("hbretry").addEventListener("click", reportSubmit);
-$("finish").addEventListener("click", () => { if (started(cur())) persist(); openHandback(); });
+function showThanks(msg) {
+  const d = $("thanks");
+  $("thanksmsg").textContent = msg || "";
+  if (d.open) return;
+  if (d.showModal) d.showModal(); else d.setAttribute("open", "");
+}
+$("thanksclose").addEventListener("click", () => { const d = $("thanks"); if (d.close) d.close(); else d.removeAttribute("open"); });
+$("finish").addEventListener("click", () => {
+  if (started(cur())) persist();
+  openHandback();
+  const done = Object.values(S.rec).filter((r) => r && r.done).length;
+  showThanks(SUBMIT_URL ? "Sending your arrows…" : done + " photos done. One more step: send your arrows as shown on the page behind this message.");
+});
 $("hbback").addEventListener("click", () => { $("handback").hidden = true; });
 $("hbcopy").addEventListener("click", () => {
   const t = $("hbtext").value, st = $("hbstatus");
