@@ -1,0 +1,401 @@
+{
+ "clips": [
+  {
+   "ds": "gopro",
+   "stem": "gopro_00528_test_GOPR0384_11_00_c390",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "gopro",
+   "stem": "gopro_00551_test_GOPR0384_11_05_c44406",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "gopro",
+   "stem": "gopro_00519_test_GOPR0385_11_01_c33492",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "gopro",
+   "stem": "gopro_00520_test_GOPR0396_11_00_c382",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "gopro",
+   "stem": "gopro_00697_test_GOPR0410_11_00_c1610",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "gopro",
+   "stem": "gopro_00401_test_GOPR0854_11_00_c294",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "gopro",
+   "stem": "gopro_00424_test_GOPR0862_11_00_c310",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "gopro",
+   "stem": "gopro_00535_test_GOPR0868_11_00_c390",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "gopro",
+   "stem": "gopro_00514_test_GOPR0869_11_00_c374",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "gopro",
+   "stem": "gopro_00548_test_GOPR0871_11_00_c398",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "gopro",
+   "stem": "gopro_00516_test_GOPR0881_11_01_c2574",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "gopro",
+   "stem": "gopro_01001_test_GOPR0384_11_00_c734",
+   "hw": [
+    736,
+    1280
+   ],
+   "optional": true
+  },
+  {
+   "ds": "gopro",
+   "stem": "gopro_00991_test_GOPR0384_11_05_c44726",
+   "hw": [
+    736,
+    1280
+   ],
+   "optional": true
+  },
+  {
+   "ds": "gopro",
+   "stem": "gopro_00981_test_GOPR0385_11_01_c33828",
+   "hw": [
+    736,
+    1280
+   ],
+   "optional": true
+  },
+  {
+   "ds": "gopro",
+   "stem": "gopro_01289_test_GOPR0410_11_00_c2050",
+   "hw": [
+    736,
+    1280
+   ],
+   "optional": true
+  },
+  {
+   "ds": "gopro",
+   "stem": "gopro_00885_test_GOPR0854_11_00_c646",
+   "hw": [
+    736,
+    1280
+   ],
+   "optional": true
+  },
+  {
+   "ds": "gopro",
+   "stem": "gopro_00732_test_GOPR0862_11_00_c534",
+   "hw": [
+    736,
+    1280
+   ],
+   "optional": true
+  },
+  {
+   "ds": "gopro",
+   "stem": "gopro_00986_test_GOPR0868_11_00_c718",
+   "hw": [
+    736,
+    1280
+   ],
+   "optional": true
+  },
+  {
+   "ds": "gopro",
+   "stem": "gopro_00998_test_GOPR0869_11_00_c726",
+   "hw": [
+    736,
+    1280
+   ],
+   "optional": true
+  },
+  {
+   "ds": "gopro",
+   "stem": "gopro_00955_test_GOPR0871_11_00_c694",
+   "hw": [
+    736,
+    1280
+   ],
+   "optional": true
+  },
+  {
+   "ds": "gopro",
+   "stem": "gopro_01000_test_GOPR0881_11_01_c2926",
+   "hw": [
+    736,
+    1280
+   ],
+   "optional": true
+  },
+  {
+   "ds": "adobe",
+   "stem": "adobe_00100_720p_240fps_1_00177",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "adobe",
+   "stem": "adobe_00061_720p_240fps_4_00113",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "adobe",
+   "stem": "adobe_00092_IMG_0051_00161",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "adobe",
+   "stem": "adobe_00098_IMG_0053_00169",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "adobe",
+   "stem": "adobe_00099_IMG_0187_00169",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "adobe",
+   "stem": "adobe_00216_720p_240fps_1_00385",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "x4k",
+   "stem": "xtest_TEST04_140_f3889_c005",
+   "hw": [
+    736,
+    1280
+   ],
+   "optional": true
+  },
+  {
+   "ds": "x4k",
+   "stem": "xtest_TEST06_001_f0273_c005",
+   "hw": [
+    736,
+    1280
+   ],
+   "optional": true
+  },
+  {
+   "ds": "x4k",
+   "stem": "xtest_TEST07_076_f1889_c005",
+   "hw": [
+    736,
+    1280
+   ],
+   "optional": true
+  },
+  {
+   "ds": "x4k",
+   "stem": "xtest_TEST13_133_f4593_c005",
+   "hw": [
+    736,
+    1280
+   ],
+   "optional": true
+  },
+  {
+   "ds": "x4k",
+   "stem": "xtest_TEST15_148_f0465_c005",
+   "hw": [
+    736,
+    1280
+   ],
+   "optional": true
+  },
+  {
+   "ds": "i2",
+   "stem": "i2_00006",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "i2",
+   "stem": "i2_00007",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "i2",
+   "stem": "i2_00008",
+   "hw": [
+    736,
+    1280
+   ],
+   "optional": true
+  },
+  {
+   "ds": "i2",
+   "stem": "i2_00009",
+   "hw": [
+    736,
+    1280
+   ],
+   "optional": true
+  },
+  {
+   "ds": "i2",
+   "stem": "i2_00010",
+   "hw": [
+    736,
+    1280
+   ],
+   "optional": true
+  },
+  {
+   "ds": "i2",
+   "stem": "i2_00013",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "i2",
+   "stem": "i2_00014",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "i2",
+   "stem": "i2_00015",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "i2",
+   "stem": "i2_00016",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "i2",
+   "stem": "i2_00017",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "i2",
+   "stem": "i2_00020",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "i2",
+   "stem": "i2_00021",
+   "hw": [
+    736,
+    1280
+   ]
+  },
+  {
+   "ds": "i2",
+   "stem": "i2_00022",
+   "hw": [
+    736,
+    1280
+   ],
+   "optional": true
+  },
+  {
+   "ds": "i2",
+   "stem": "i2_00026",
+   "hw": [
+    736,
+    1280
+   ],
+   "optional": true
+  },
+  {
+   "ds": "i2",
+   "stem": "i2_00027",
+   "hw": [
+    736,
+    1280
+   ],
+   "optional": true
+  }
+ ]
+}

@@ -1,0 +1,651 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>Blur Arrow Study</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a drawing bench. Left, the photo you draw on; right, the real clip and your arrows; below, the photo strip. */
+:root {
+  --bg: #eef2f5; --panel: #ffffff; --ink: #14202b; --muted: #566676; --line: #d2dbe3;
+  --accent: #1f5fbf; --accent-soft: #dde8f8; --warn: #a3520c; --done: #1d7f5f; --done-soft: #dcf1e8;
+  --font-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f151b; --panel: #172029; --ink: #e2e9ef; --muted: #91a1b0; --line: #2a3642;
+  --accent: #7fb0ff; --accent-soft: #1d2f4a; --warn: #f0a35e; --done: #5fd0a6; --done-soft: #183a30; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0f151b; --panel: #172029; --ink: #e2e9ef; --muted: #91a1b0; --line: #2a3642;
+  --accent: #7fb0ff; --accent-soft: #1d2f4a; --warn: #f0a35e; --done: #5fd0a6; --done-soft: #183a30; color-scheme: dark }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.45; }
+.wrap { max-width: 1400px; margin: 0 auto; padding-block: 18px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 16px; }
+header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; }
+h1 { font-size: 1.35rem; margin: 0; text-wrap: balance; }
+h2 { font-size: 1.05rem; margin: 0; text-wrap: balance; }
+.meta { color: var(--muted); font-family: var(--font-mono); font-size: 0.82rem; font-variant-numeric: tabular-nums; }
+.banner { border: 1px solid var(--warn); color: var(--warn); border-radius: 6px; padding: 8px 12px; font-size: 0.9rem; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px; min-width: 0; }
+.intro { display: grid; gap: 12px; max-width: 78ch; }
+.intro p, .intro ol { margin: 0; }
+.intro ol { padding-left: 1.3em; display: grid; gap: 4px; }
+.demo { margin: 0; display: grid; gap: 6px; max-width: 520px; }
+.demowrap { position: relative; width: 100%; max-width: 100%; aspect-ratio: 640 / 368; background: var(--line); border-radius: 6px; overflow: hidden; }
+canvas#demo { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.demostep { font-size: 0.92rem; font-weight: 700; min-height: 1.45em; }
+.row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+label.field { display: grid; gap: 4px; font-size: 0.88rem; color: var(--muted); }
+input[type=text] { font: inherit; font-size: 0.95rem; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; background: var(--bg); color: var(--ink); width: 12ch; }
+.bench { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 900px) { .bench { grid-template-columns: minmax(0, 1fr); } }
+.stage { display: grid; gap: 10px; }
+.idrow { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.wid { font-family: var(--font-mono); font-weight: 600; font-size: 1rem; }
+.canvaswrap { position: relative; width: 100%; max-width: 100%; aspect-ratio: 1280 / 736; background: var(--line); border-radius: 6px; overflow: hidden; }
+canvas#pad { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; display: block; }
+.hint { font-size: 0.85rem; color: var(--muted); }
+.side { display: grid; gap: 14px; }
+.gt { width: 100%; max-width: 100%; aspect-ratio: 640 / 368; background-repeat: no-repeat; background-size: 900% 100%; border-radius: 6px; background-color: var(--line); }
+.cap { font-size: 0.78rem; color: var(--muted); letter-spacing: 0.02em; }
+.arrows { display: grid; gap: 6px; }
+.arr { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
+.sw { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-family: var(--font-mono); font-weight: 600; font-size: 0.85rem; color: #10151a; }
+.st { font-size: 0.86rem; color: var(--muted); }
+.empty { font-size: 0.86rem; color: var(--muted); border: 1px dashed var(--line); border-radius: 6px; padding: 8px 10px; }
+.none-on { color: var(--warn); font-weight: 700; }
+button { font: inherit; font-size: 0.9rem; border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+button:hover { border-color: var(--accent); }
+button.small { padding: 3px 9px; font-size: 0.8rem; }
+button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+button:focus-visible, input:focus-visible, canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--panel); font-weight: 700; }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.status { font-size: 0.86rem; color: var(--muted); min-height: 1.3em; }
+.status.err { color: var(--warn); }
+.handback { display: grid; gap: 10px; }
+.handback p { margin: 0; max-width: 78ch; }
+.handback textarea { width: 100%; min-height: 7.5em; box-sizing: border-box; font-family: var(--font-mono); font-size: 0.78rem; border: 1px solid var(--line); border-radius: 6px; padding: 8px; background: var(--bg); color: var(--ink); resize: vertical; }
+.strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 5px; }
+.q { font-family: var(--font-mono); font-size: 0.76rem; padding: 4px 0; text-align: center; border-radius: 4px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); cursor: pointer; }
+.q.done { background: var(--done-soft); border-color: var(--done); color: var(--ink); }
+.q.part { border-color: var(--accent); color: var(--ink); }
+.q.cur { outline: 2px solid var(--accent); outline-offset: 1px; color: var(--ink); }
+.q.opt { border-style: dashed; }
+table { border-collapse: collapse; width: 100%; font-size: 0.86rem; }
+th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+th { font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.tablewrap { overflow-x: auto; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Blur Arrow Study</h1>
+    <span class="meta" id="progress">Loading photos…</span>
+  </header>
+
+  <div class="banner" id="nodb" hidden></div>
+
+  <section class="panel intro" id="intro" aria-label="Instructions">
+    <h2>Draw where things moved</h2>
+    <p>Each photo was taken with a long exposure, so anything that moved left a blur. The clip beside the photo shows what really happened during the exposure.</p>
+    <ol>
+      <li>Draw <b>one arrow on each part of the picture that moved</b>, in the direction it moved: each moving object, and the background if the camera moved. Press where it starts, drag the way it goes, let go.</li>
+      <li>Draw quickly, the way you would in a photo app. Do not trace the motion exactly. Up to 5 arrows per photo.</li>
+      <li>If nothing seems to move, or you cannot tell, press <b>Nothing I can tell</b>.</li>
+      <li>Press <b>Save and next</b>. Your arrows are saved after every photo, so you can stop and come back.</li>
+    </ol>
+    <figure class="demo" aria-label="Example">
+      <div class="demowrap"><canvas id="demo" role="img" aria-label="Two animated examples on made-up pictures. First, a still camera: a pointer draws one arrow on a blurred ball and one on a blurred car, each the way it moved, then presses Save and next. Second, the camera moved: the pointer draws one arrow on the blurred background, the way it moved in the picture, and one on a ball that moved a different way."></canvas></div>
+      <div class="demostep" id="demostep">Example: one arrow on each part that moved.</div>
+      <figcaption class="cap">Two made-up pictures, not study photos: a still camera, then a moving camera. Your arrows do not need to match these in length or position.</figcaption>
+    </figure>
+    <p class="hint">26 photos, about 20 minutes, plus 21 optional ones at the end if you have time; you can stop at any point and come back later. Please do not look at anyone else's arrows. What is stored: your arrows, the time you drew them, a random id kept in this browser and the initials you type below (optional); no name, email or address. They are used only to test arrow-controlled video generation. If your arrows cannot be saved from your link, the page asks you to send them yourself at the end.</p>
+    <div class="row">
+      <label class="field" for="initials">Initials (optional)<input type="text" id="initials" maxlength="6" autocomplete="off"></label>
+      <button type="button" class="primary" id="start">Start drawing</button>
+    </div>
+  </section>
+
+  <div class="bench" id="bench" hidden>
+    <section class="panel stage" aria-label="Photo">
+      <div class="idrow">
+        <span class="wid" id="wid">–</span>
+        <span class="meta" id="pos"></span>
+      </div>
+      <div class="canvaswrap"><canvas id="pad" tabindex="0" aria-label="Blurred photo. Press, drag and release to draw an arrow where something moved."></canvas></div>
+      <span class="hint" id="drawhint">Draw an arrow on each part that moved.</span>
+      <div class="actions">
+        <button type="button" class="primary" id="save">Save and next</button>
+        <button type="button" id="undo">Undo last arrow</button>
+        <button type="button" id="none" aria-pressed="false">Nothing I can tell</button>
+        <button type="button" id="prev">Previous photo</button>
+        <button type="button" id="skip">Skip for now</button>
+        <button type="button" id="finish" hidden>Finish and send</button>
+      </div>
+      <div class="status" id="status" role="status"></div>
+    </section>
+
+    <section class="panel side" aria-label="What happened">
+      <div>
+        <div class="gt" id="gt" role="img" aria-label="What really happened, looping"></div>
+        <div class="cap">What really happened (looping)</div>
+      </div>
+      <div class="arrows" id="arrows"></div>
+    </section>
+  </div>
+
+  <section class="panel handback" id="handback" hidden aria-label="Send your arrows">
+    <h2>Send your arrows</h2>
+    <p id="hbintro">Your arrows could not be saved automatically from this link. They are kept in this browser. To hand them in, copy the text below or save it as a file, then send it to the person who gave you this link.</p>
+    <span class="meta" id="hbcount"></span>
+    <textarea id="hbtext" readonly rows="6" aria-label="Your arrows as text"></textarea>
+    <div class="actions">
+      <button type="button" id="hbretry" hidden>Send again</button>
+      <button type="button" class="primary" id="hbcopy">Copy text</button>
+      <button type="button" id="hbsave" hidden>Save as file</button>
+      <button type="button" id="hbback">Back to drawing</button>
+    </div>
+    <div class="status" id="hbstatus" role="status"></div>
+  </section>
+
+  <section class="panel" id="stripwrap" hidden aria-label="All photos">
+    <div class="strip" id="strip"></div>
+    <p class="cap">Green = done, blue = started, dashed = optional. Click any number to go back to a photo.</p>
+  </section>
+
+  <section class="panel" id="organiser" hidden aria-label="Organiser view">
+    <h2>Who has drawn so far</h2>
+    <p class="hint">Only you see this list. Arrows drawn by the artifact's owner are marked and left out of the study.</p>
+    <div class="tablewrap"><table><thead><tr><th>Initials</th><th>Photos done</th><th>Arrows</th><th>Last saved</th><th>Note</th></tr></thead><tbody id="orgrows"><tr><td colspan="5">No arrows saved yet.</td></tr></tbody></table></div>
+  </section>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const COLORS = ["#ffb000", "#2fd4ef", "#ff6fb5", "#9be15d", "#c9a7ff"];
+const SUBMIT_URL = "";         // public copy only (build_pages_site.py): where each saved photo is posted
+const PROTOCOL = "E19-A v3";   // v3 (A367): Adobe240 photos from the held-out recordings; v2 (A185): free drawing, no regions shown
+const MAX_ARROWS = 5;
+const MIN_PX = 12;             // shortest accepted arrow, in pixels of the 1280-wide photo
+const MAX_PTS = 32;            // points kept per drawn path
+const S = { clips: [], idx: 0, rec: {}, draw: null, img: null, imgStem: null, db: null, ref: null, uid: null,
+  owner: false, readonly: false, handback: false, dl: null, saving: Promise.resolve(), started: null, frame: 0, timer: null };
+
+function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+function clipRec(stem) {
+  if (!S.rec[stem]) S.rec[stem] = { arrows: {}, none: false, done: false };
+  return S.rec[stem];
+}
+function cur() { return S.clips[S.idx]; }
+function arrowList(c) { const a = clipRec(c.stem).arrows; return Object.keys(a).sort((x, y) => a[x].n - a[y].n).map((k) => [k, a[k]]); }
+function complete(c) { const r = clipRec(c.stem); return r.none || arrowList(c).length > 0; }
+function started(c) { const x = S.rec[c.stem]; return !!x && (Object.keys(x.arrows).length > 0 || x.none); }
+
+// ---------- drawing ----------
+const pad = $("pad"), ctx = pad.getContext("2d");
+function sizeCanvas() {
+  const r = pad.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+  const w = Math.max(1, Math.round(r.width * d)), h = Math.max(1, Math.round(r.height * d));
+  if (pad.width !== w || pad.height !== h) { pad.width = w; pad.height = h; }
+  render();
+}
+function P(p) { return [p[0] * pad.width, p[1] * pad.height]; }
+function arrowHead(x0, y0, x1, y1, size, color) {
+  const a = Math.atan2(y1 - y0, x1 - x0);
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x1 - size * Math.cos(a - 0.45), y1 - size * Math.sin(a - 0.45));
+  ctx.lineTo(x1 - size * Math.cos(a + 0.45), y1 - size * Math.sin(a + 0.45));
+  ctx.closePath();
+  ctx.fillStyle = color; ctx.fill(); ctx.lineWidth = Math.max(1, size * 0.12); ctx.strokeStyle = "#0b0f13"; ctx.stroke();
+}
+function drawArrow(pts, color, u, label) {
+  if (pts.length < 2) return;
+  const q = pts.map(P);
+  ctx.lineCap = "round"; ctx.lineJoin = "round";
+  for (const [w, c] of [[7 * u, "#0b0f13"], [4 * u, color]]) {
+    ctx.beginPath(); ctx.moveTo(q[0][0], q[0][1]);
+    for (let i = 1; i < q.length; i++) ctx.lineTo(q[i][0], q[i][1]);
+    ctx.lineWidth = w; ctx.strokeStyle = c; ctx.stroke();
+  }
+  const n = q.length, b = q[Math.max(0, n - 4)];
+  arrowHead(b[0], b[1], q[n - 1][0], q[n - 1][1], 16 * u, color);
+  if (label) {
+    const [x, y] = q[0], rad = 11 * u;
+    ctx.beginPath(); ctx.arc(x, y, rad, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
+    ctx.lineWidth = 2 * u; ctx.strokeStyle = "#0b0f13"; ctx.stroke();
+    ctx.fillStyle = "#0b0f13"; ctx.font = `600 ${Math.round(13 * u)}px "JetBrains Mono", monospace`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(label, x, y + u);
+  }
+}
+function unflat(a) { const o = []; for (let i = 0; i + 1 < a.length; i += 2) o.push([a[i], a[i + 1]]); return o; }
+function render() {
+  const c = cur(); if (!c) return;
+  const u = pad.width / 1000;
+  ctx.clearRect(0, 0, pad.width, pad.height);
+  if (S.img && S.imgStem === c.stem && S.img.complete) ctx.drawImage(S.img, 0, 0, pad.width, pad.height);
+  arrowList(c).forEach(([k, a], j) => drawArrow(unflat(a.path), COLORS[j % COLORS.length], u, String(j + 1)));
+  if (S.draw) drawArrow(S.draw.pts, COLORS[arrowList(c).length % COLORS.length], u, "");
+}
+function pt(e) {
+  const r = pad.getBoundingClientRect();
+  return [Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)), Math.min(1, Math.max(0, (e.clientY - r.top) / r.height))];
+}
+function pxDist(a, b, c) { return Math.hypot((a[0] - b[0]) * c.hw[1], (a[1] - b[1]) * c.hw[0]); }
+function downsample(pts) {
+  if (pts.length <= MAX_PTS) return pts;
+  const o = []; for (let k = 0; k < MAX_PTS; k++) o.push(pts[Math.round(k * (pts.length - 1) / (MAX_PTS - 1))]); return o;
+}
+function round4(v) { return Math.round(v * 10000) / 10000; }
+pad.addEventListener("pointerdown", (e) => {
+  const c = cur(); if (!c) return;
+  e.preventDefault();
+  if (arrowList(c).length >= MAX_ARROWS) { say("This photo already has " + MAX_ARROWS + " arrows. Undo one to draw another.", true); return; }
+  try { pad.setPointerCapture(e.pointerId); } catch (err) {}
+  S.draw = { pts: [pt(e)], t0: performance.now(), id: e.pointerId };
+});
+pad.addEventListener("pointermove", (e) => {
+  if (!S.draw || e.pointerId !== S.draw.id) return;
+  const p = pt(e), last = S.draw.pts[S.draw.pts.length - 1];
+  if (pxDist(p, last, cur()) >= 2) { S.draw.pts.push(p); render(); }
+});
+pad.addEventListener("pointerup", (e) => {
+  if (!S.draw || e.pointerId !== S.draw.id) return;
+  const c = cur(), d = S.draw; S.draw = null;
+  d.pts.push(pt(e));
+  const tail = d.pts[0], head = d.pts[d.pts.length - 1];
+  if (pxDist(tail, head, c) < MIN_PX) { say("That was too short for an arrow. Press, drag the way the part moved, then let go.", true); render(); return; }
+  const rec = clipRec(c.stem), n = Object.values(rec.arrows).reduce((m, a) => Math.max(m, a.n + 1), 0);
+  rec.arrows["a" + n] = { n, tail: { x: round4(tail[0]), y: round4(tail[1]) }, head: { x: round4(head[0]), y: round4(head[1]) },
+    path: downsample(d.pts).flatMap((p) => [round4(p[0]), round4(p[1])]), ms: Math.round(performance.now() - d.t0), at: new Date().toISOString() };
+  rec.none = false; rec.done = false;
+  say(""); refresh();
+});
+pad.addEventListener("pointercancel", (e) => { if (S.draw && e.pointerId === S.draw.id) { S.draw = null; render(); } });
+
+// ---------- side panel ----------
+function renderArrows() {
+  const c = cur(), rec = clipRec(c.stem), box = $("arrows"); box.textContent = "";
+  const list = arrowList(c);
+  if (rec.none) { const p = document.createElement("div"); p.className = "empty none-on"; p.textContent = "Marked: nothing I can tell on this photo."; box.append(p); }
+  else if (!list.length) { const p = document.createElement("div"); p.className = "empty"; p.textContent = "No arrows yet. Draw one on each part that moved."; box.append(p); }
+  list.forEach(([k, a], j) => {
+    const row = document.createElement("div"); row.className = "arr";
+    const sw = document.createElement("span"); sw.className = "sw"; sw.style.background = COLORS[j % COLORS.length]; sw.textContent = String(j + 1);
+    const tx = document.createElement("span"); tx.className = "st"; tx.textContent = "Arrow " + (j + 1);
+    const del = document.createElement("button"); del.type = "button"; del.className = "small"; del.textContent = "Delete";
+    del.addEventListener("click", () => { delete rec.arrows[k]; rec.done = false; refresh(); });
+    row.append(sw, tx, del); box.append(row);
+  });
+  $("none").setAttribute("aria-pressed", String(!!rec.none));
+  $("drawhint").textContent = list.length >= MAX_ARROWS ? "That is the most arrows for one photo." : complete(c) ? "Add an arrow for any other part that moved, or press Save and next." : "Draw an arrow on each part that moved.";
+  $("save").disabled = !complete(c);
+}
+function renderStrip() {
+  const s = $("strip");
+  if (!s.childElementCount) S.clips.forEach((c, i) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "q"; b.textContent = String(i + 1);
+    b.title = c.optional ? "Optional photo" : "Photo " + (i + 1);
+    b.addEventListener("click", () => go(i)); s.append(b);
+  });
+  [...s.children].forEach((b, i) => {
+    const c = S.clips[i], rec = S.rec[c.stem];
+    b.className = "q" + (rec && rec.done ? " done" : started(c) ? " part" : "") + (c.optional ? " opt" : "") + (i === S.idx ? " cur" : "");
+  });
+  const main = S.clips.filter((c) => !c.optional), done = main.filter((c) => S.rec[c.stem] && S.rec[c.stem].done).length;
+  const opt = S.clips.filter((c) => c.optional && S.rec[c.stem] && S.rec[c.stem].done).length;
+  $("progress").textContent = done + " of " + main.length + " photos done" + (opt ? " (+" + opt + " optional)" : "");
+}
+function refresh() { if (cur()) { renderArrows(); render(); } renderStrip(); }
+function say(t, err) { $("status").textContent = t; $("status").className = "status" + (err ? " err" : ""); }
+
+// ---------- navigation ----------
+function go(i) {
+  S.idx = Math.max(0, Math.min(S.clips.length - 1, i));
+  const c = cur();
+  $("wid").textContent = "Photo " + (S.idx + 1) + (c.optional ? " (optional)" : "");
+  $("pos").textContent = (S.idx + 1) + " of " + S.clips.length;
+  const img = new Image(); img.onload = () => { if (S.imgStem === c.stem) render(); }; img.src = "c/" + c.stem + "_blur.jpg";
+  S.img = img; S.imgStem = c.stem;
+  $("gt").style.backgroundImage = 'url("c/' + c.stem + '_gt.jpg")';
+  S.frame = 0;
+  say(S.rec[c.stem] && S.rec[c.stem].done ? "Saved earlier. Change any arrow and save again to update it." : "");
+  refresh();
+}
+function nextTodo(from) {
+  for (let k = 1; k <= S.clips.length; k++) { const i = (from + k) % S.clips.length; const r = S.rec[S.clips[i].stem]; if (!(r && r.done)) return i; }
+  return -1;
+}
+function startGt() {
+  clearInterval(S.timer);
+  S.timer = setInterval(() => { S.frame = (S.frame + 1) % 12; const f = Math.min(8, S.frame); $("gt").style.backgroundPosition = (f * 12.5) + "% 0"; }, 160);
+}
+
+// ---------- saving ----------
+function body() {
+  return { protocol: PROTOCOL, initials: ($("initials").value || "").trim().slice(0, 6), is_owner: S.owner,
+    started_at: S.started || new Date().toISOString(), updated_at: new Date().toISOString(), clips: S.rec, ...(S.prevV2 ? { v2_clips: S.prevV2 } : {}) };
+}
+function persist() {
+  lsSet("arrows2.draft", JSON.stringify({ rec: S.rec, initials: $("initials").value }));
+  if (!S.ref || S.readonly) { flushSubmit(); return Promise.resolve(false); }
+  const b = JSON.parse(JSON.stringify(body()));
+  S.saving = S.saving.then(() => S.ref.set(b)).then(() => true, (e) => {
+    if (e && (e.code === "invalid_argument" || e.code === "not_granted" || e.code === "revoked")) {
+      S.readonly = true;
+      enterHandback();
+    } else say("Not saved (" + (e && e.code ? e.code : "error") + "). Press Save and next again in a moment.", true);
+    return false;
+  });
+  return S.saving;
+}
+async function saveNext() {
+  const c = cur(); if (!complete(c)) return;
+  clipRec(c.stem).done = true;
+  $("save").disabled = true;
+  const ok = await persist();
+  if (ok || !S.ref || S.readonly) {
+    const n = nextTodo(S.idx);
+    if (n >= 0) go(n); else { refresh(); say("All photos are done. Thank you for drawing."); if (S.handback) openHandback(); }
+  } else refresh();
+}
+$("save").addEventListener("click", saveNext);
+$("skip").addEventListener("click", () => { if (started(cur())) persist(); go(S.idx + 1); });
+$("prev").addEventListener("click", () => { if (started(cur())) persist(); go(S.idx - 1); });
+$("undo").addEventListener("click", () => {
+  const c = cur(), rec = clipRec(c.stem), list = arrowList(c);
+  if (!list.length) { say("No arrow to undo on this photo."); return; }
+  delete rec.arrows[list[list.length - 1][0]]; rec.done = false; refresh();
+});
+$("none").addEventListener("click", () => {
+  const rec = clipRec(cur().stem);
+  rec.none = !rec.none; if (rec.none) rec.arrows = {}; rec.done = false; refresh();
+});
+window.addEventListener("resize", sizeCanvas);
+document.addEventListener("keydown", (e) => {
+  if ($("bench").hidden || e.target.tagName === "INPUT" || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === "Enter" && !$("save").disabled) { e.preventDefault(); saveNext(); }
+  if (e.key.toLowerCase() === "z") $("undo").click();
+});
+
+function showDbBanner(t) { $("nodb").textContent = t; $("nodb").hidden = false; }
+
+// ---------- hand-back: visitors whose arrows the page cannot store send them themselves ----------
+function handbackId() {
+  let h = lsGet("arrows2.hid");
+  if (!h) { h = "h" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); lsSet("arrows2.hid", h); }
+  return h;
+}
+function enterHandback() {
+  if (S.handback) return;
+  S.handback = true; $("finish").hidden = false;
+  if (SUBMIT_URL) {
+    $("finish").textContent = "Finish";
+    showDbBanner("Your arrows are sent to the study each time you press Save and next. Press Finish when you are done.");
+  } else showDbBanner("Your arrows cannot be saved automatically from this link. Draw as usual: they are kept in this browser. When you are done, press Finish and send to hand them in.");
+}
+// public copy: post each finished photo's arrows to SUBMIT_URL (one small record per photo; the newest record of a photo counts)
+function sentMap() { try { return JSON.parse(lsGet("arrows2.sent") || "{}") || {}; } catch (e) { return {}; } }
+function unsent() {
+  const m = sentMap();
+  return Object.keys(S.rec).filter((k) => S.rec[k] && S.rec[k].done && m[k] !== JSON.stringify(S.rec[k]));
+}
+function flushSubmit() {
+  if (!SUBMIT_URL || !S.handback) return Promise.resolve(0);
+  S.sending = (S.sending || Promise.resolve()).then(async () => {
+    for (const stem of unsent()) {
+      const clip = JSON.stringify(S.rec[stem]);
+      const bodyText = JSON.stringify({ protocol: PROTOCOL, handback_id: handbackId(), initials: ($("initials").value || "").trim().slice(0, 6),
+        stem, clip: S.rec[stem], started_at: S.started, at: new Date().toISOString() });
+      try {
+        const r = await fetch(SUBMIT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: bodyText });
+        const t = await r.text();
+        if (!r.ok || t.indexOf('"ok":true') < 0) throw new Error("refused");
+        const m = sentMap(); m[stem] = clip; lsSet("arrows2.sent", JSON.stringify(m));
+      } catch (e) { break; }   // offline or refused: keep the rest for the next try
+    }
+    return unsent().length;
+  });
+  return S.sending;
+}
+function handbackText() {
+  return JSON.stringify(Object.assign(body(), { is_owner: false, handback: true, handback_id: handbackId(), account: S.uid || null }));
+}
+function openHandback() {
+  const done = Object.values(S.rec).filter((r) => r && r.done).length;
+  $("hbtext").value = handbackText();
+  $("hbcount").textContent = done + " photos done";
+  $("hbstatus").textContent = done ? "" : "No photo is saved yet. Draw on a photo and press Save and next first.";
+  $("handback").hidden = false;
+  $("handback").scrollIntoView({ block: "start" });
+  if (SUBMIT_URL) reportSubmit();
+}
+function reportSubmit() {
+  $("hbintro").textContent = "Sending your arrows to the study…";
+  flushSubmit().then((left) => {
+    const done = Object.values(S.rec).filter((r) => r && r.done).length;
+    $("hbretry").hidden = !left;
+    $("hbcount").textContent = (done - left) + " of " + done + " photos sent";
+    $("hbintro").textContent = left
+      ? "Some photos could not be sent, maybe because you are offline. Press Send again, or copy the text below and send it to the person who gave you this link."
+      : "All your arrows are sent. Thank you. You can close this page, or go back and draw more.";
+  });
+}
+$("hbretry").addEventListener("click", reportSubmit);
+$("finish").addEventListener("click", () => { if (started(cur())) persist(); openHandback(); });
+$("hbback").addEventListener("click", () => { $("handback").hidden = true; });
+$("hbcopy").addEventListener("click", () => {
+  const t = $("hbtext").value, st = $("hbstatus");
+  const fallback = () => { $("hbtext").focus(); $("hbtext").select(); st.textContent = "Could not copy automatically. The text is selected: copy it with your keyboard, then send it."; };
+  if (!navigator.clipboard || !navigator.clipboard.writeText) { fallback(); return; }
+  navigator.clipboard.writeText(t).then(() => { st.textContent = "Copied. Paste it into a message to the person who gave you this link."; }, fallback);
+});
+$("hbsave").addEventListener("click", () => {
+  const st = $("hbstatus");
+  if (!S.dl) return;
+  S.dl.save({ filename: "blur-arrows-" + handbackId() + ".json", data: $("hbtext").value }).then(
+    () => { st.textContent = "Saved. Send that file to the person who gave you this link."; },
+    (e) => { if (e && e.code === "declined") return; $("hbsave").hidden = true; st.textContent = "Could not save a file here. Use Copy text instead."; });
+});
+function begin() {
+  if (!S.started) S.started = new Date().toISOString();
+  $("intro").hidden = true; $("bench").hidden = false; $("stripwrap").hidden = false;
+  requestAnimationFrame(sizeCanvas); startGt();
+  const first = S.rec[S.clips[0].stem];
+  const n = first && first.done ? nextTodo(0) : 0;
+  go(n >= 0 ? n : 0);
+}
+$("start").addEventListener("click", () => { begin(); if (S.ref && !S.readonly) persist(); });
+
+// ---------- organiser ----------
+function renderOrganiser(docs) {
+  const tb = $("orgrows"); tb.textContent = "";
+  if (!docs.length) { const tr = document.createElement("tr"); const td = document.createElement("td"); td.colSpan = 5; td.textContent = "No arrows saved yet."; tr.append(td); tb.append(tr); return; }
+  docs.forEach((d) => {
+    const v = d.data() || {}, cl = v.clips || {};
+    const done = Object.values(cl).filter((x) => x && x.done).length;
+    const arrows = Object.values(cl).reduce((n, x) => n + Object.keys((x && x.arrows) || {}).length, 0);
+    const note = v.is_owner ? "owner: excluded" : v.protocol !== PROTOCOL ? "old page version: excluded" : "";
+    const tr = document.createElement("tr");
+    [v.initials || "(none)", String(done), String(arrows), v.updated_at ? String(v.updated_at).replace("T", " ").slice(0, 16) : "–", note]
+      .forEach((t) => { const td = document.createElement("td"); td.textContent = t; tr.append(td); });
+    tb.append(tr);
+  });
+}
+
+// ---------- boot ----------
+async function boot() {
+  let data;
+  try { data = await (await fetch("clips.json")).json(); } catch (e) { $("progress").textContent = "Could not load the photos. Reload the page."; return; }
+  const by = { gopro: [], adobe: [], i2: [], x4k: [] };
+  data.clips.forEach((c) => (by[c.ds] || (by[c.ds] = [])).push(c));
+  // main photos: the three sets spread evenly through the list (photo i of a set of n sits at (i + 0.5) / n), A369 added I2-2000fps
+  const keyed = [];
+  // A370: 30 required photos; a clip with "optional" in clips.json (and every X4K clip) goes to the optional block at the end
+  const isOpt = (c) => !!c.optional || c.ds === "x4k";
+  ["gopro", "adobe", "i2"].forEach((ds, d) => { const r = by[ds].filter((c) => !isOpt(c)); r.forEach((c, i) => keyed.push([(i + 0.5) / r.length, d, c])); });
+  keyed.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const mix = keyed.map((k) => k[2]);
+  ["gopro", "adobe", "i2", "x4k"].forEach((ds) => by[ds].filter(isOpt).forEach((c) => mix.push(Object.assign({}, c, { optional: true }))));
+  S.clips = mix;
+  try { const d = JSON.parse(lsGet("arrows2.draft") || "null"); if (d && d.rec) { S.rec = d.rec; if (d.initials) $("initials").value = d.initials; } } catch (e) {}
+  $("progress").textContent = S.clips.filter((c) => !c.optional).length + " photos to draw";
+  renderStrip();
+
+  const user = window.claude && window.claude.use ? await window.claude.use("user") : null;
+  const db = window.claude && window.claude.use ? await window.claude.use("db") : null;
+  S.owner = user ? await user.isOwner() : false;
+  S.uid = user ? await user.id() : null;
+  S.dl = window.claude && window.claude.use ? await window.claude.use("downloads") : null;
+  $("hbsave").hidden = !S.dl;
+  if (!db || !S.uid) { enterHandback(); return; }
+  S.db = db;
+  S.ref = db.doc("arrows/" + S.uid);
+  if (S.owner) showDbBanner("You own this page. Your own arrows are marked as the owner's and are not used in the study; share the page with volunteers as Contributors.");
+  try {
+    const snap = await S.ref.get();
+    if (snap.exists) {
+      const v = snap.data() || {};
+      if (v.v2_clips) S.prevV2 = v.v2_clips;
+      if (v.protocol === PROTOCOL) {
+        S.rec = JSON.parse(JSON.stringify(v.clips || {})); S.started = v.started_at || null;
+        if (v.initials) $("initials").value = v.initials;
+        if (Object.keys(S.rec).length) $("start").textContent = "Continue drawing";
+      } else if (v.protocol === "E19-A v2") {
+        // v3 (A367) replaced only the Adobe photos: arrows drawn on v2 for photos still on the page carry over; the whole v2 record is
+        // kept untouched in v2_clips on every save, so nothing drawn before is lost
+        S.prevV2 = v.clips || {};
+        const here = new Set(S.clips.map((c) => c.stem));
+        for (const [k, r] of Object.entries(S.prevV2)) if (here.has(k) && !S.rec[k]) S.rec[k] = JSON.parse(JSON.stringify(r));
+        S.started = v.started_at || null;
+        if (v.initials) $("initials").value = v.initials;
+        if (Object.keys(S.rec).length) $("start").textContent = "Continue drawing";
+      }
+    }
+  } catch (e) { /* first visit or transient: keep the local draft */ }
+  renderStrip();
+  if (user && await user.canEdit()) {
+    $("organiser").hidden = false;
+    db.collection("arrows").onSnapshot((qs) => renderOrganiser(qs.docs), () => {});
+  }
+}
+boot();
+
+// ---------- landing-page examples (made-up scenes; never a study photo, A185) ----------
+(function demo() {
+  const cv = $("demo"), g = cv.getContext("2d"), step = $("demostep");
+  const W = 640, H = 368, still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const BTN = { x: 468, y: 318, w: 150, h: 34 };
+  const lerp = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+  const ease = (t) => t < 0 ? 0 : t > 1 ? 1 : t * t * (3 - 2 * t);
+  function size() {
+    const r = cv.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+    const w = Math.max(1, Math.round(r.width * d)), h = Math.max(1, Math.round(r.height * d));
+    if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+  }
+  function ball(x, y, a) { g.globalAlpha = a; g.beginPath(); g.arc(x, y, 26, 0, Math.PI * 2); g.fillStyle = "#d9572b"; g.fill(); g.globalAlpha = 1; }
+  function car(x, y, a) {
+    g.globalAlpha = a; g.fillStyle = "#2d5d9a"; g.fillRect(x - 46, y - 14, 92, 28); g.fillRect(x - 24, y - 32, 50, 20);
+    g.fillStyle = "#1a2027"; g.beginPath(); g.arc(x - 26, y + 16, 9, 0, Math.PI * 2); g.arc(x + 26, y + 16, 9, 0, Math.PI * 2); g.fill(); g.globalAlpha = 1;
+  }
+  function sky() {
+    const s = g.createLinearGradient(0, 0, 0, H); s.addColorStop(0, "#aebfcc"); s.addColorStop(0.62, "#cfd6d8"); s.addColorStop(0.62, "#7d8478"); s.addColorStop(1, "#5c6258");
+    g.fillStyle = s; g.fillRect(0, 0, W, H);
+  }
+  // the street the camera pans over: everything in it shifts together by dx
+  function street(dx, a) {
+    g.globalAlpha = a;
+    const B = [[-60, 96, 90, 132, "#5f6f7c"], [60, 60, 110, 168, "#74655a"], [200, 110, 80, 118, "#56705f"], [310, 72, 120, 156, "#6b6078"], [460, 104, 90, 124, "#7a6a52"], [580, 66, 110, 162, "#5a6b78"], [720, 100, 90, 128, "#6e5d5d"]];
+    for (const [x, y, w, h, c] of B) {
+      g.fillStyle = c; g.fillRect(x + dx, y, w, h);
+      g.fillStyle = "#e8e2c4"; for (let r = 0; r < 3; r++) for (let q = 0; q < 2; q++) g.fillRect(x + dx + 16 + q * (w - 46), y + 16 + r * 34, 14, 18);
+    }
+    g.fillStyle = "#e9e4d2"; for (let x = -40; x < 800; x += 90) g.fillRect(x + dx, 296, 44, 7);   // road marks
+    g.globalAlpha = 1;
+  }
+  const PAN = 120;   // px the background slides left while the camera pans right
+  const SCENES = [
+    { // 1: still camera, two moving objects
+      A: { from: [150, 128], to: [300, 128], color: COLORS[0] }, B: { from: [505, 262], to: [365, 262], color: COLORS[1] },
+      draw(clipT) {
+        sky(); g.fillStyle = "#6a7a70"; g.fillRect(40, 150, 70, 78); g.fillRect(560, 120, 50, 108);   // still things stay sharp
+        for (let i = 0; i <= 24; i++) { const t = i / 24; ball(...lerp(this.A.from, this.A.to, t), 0.07); car(...lerp(this.B.from, this.B.to, t), 0.07); }
+        if (clipT !== null) { ball(...lerp(this.A.from, this.A.to, clipT), 0.95); car(...lerp(this.B.from, this.B.to, clipT), 0.95); }
+      },
+      m: { clip: "Example 1. The clip shows which way each part moved.", a0: "1. Press where a moving part starts.", a1: "2. Drag the way it moved.", a2: "3. Let go. That is one arrow.",
+           b: "One arrow for each part that moved.", done: "Still things get no arrow.", save: "Then press Save and next." } },
+    { // 2: the camera pans, so the whole background moves; one object moves its own way
+      A: { from: [330, 150], to: [330 - PAN, 150], color: COLORS[0] }, B: { from: [420, 268], to: [505, 196], color: COLORS[1] },
+      draw(clipT) {
+        sky();
+        for (let i = 0; i <= 24; i++) { const t = i / 24; street(-PAN * t, 0.07); ball(...lerp(this.B.from, this.B.to, t), 0.07); }
+        if (clipT !== null) { sky(); street(-PAN * clipT, 1); ball(...lerp(this.B.from, this.B.to, clipT), 0.95); }
+      },
+      m: { clip: "Example 2. The camera moved, so the whole background moved.", a0: "Draw one arrow on the background.", a1: "Drag the way the background moved in the picture.", a2: "One arrow covers the whole background.",
+           b: "A part that moved a different way gets its own arrow.", done: "Two arrows: the background and the ball.", save: "Then press Save and next." } },
+  ];
+  function arrow(o, t, label) {
+    if (t <= 0) return;
+    const tip = lerp(o.from, o.to, t), a = Math.atan2(tip[1] - o.from[1], tip[0] - o.from[0]);
+    g.lineCap = "round";
+    for (const [w, c] of [[7, "#0b0f13"], [4, o.color]]) { g.beginPath(); g.moveTo(...o.from); g.lineTo(...tip); g.lineWidth = w; g.strokeStyle = c; g.stroke(); }
+    if (Math.hypot(tip[0] - o.from[0], tip[1] - o.from[1]) > 14) {
+      g.beginPath(); g.moveTo(...tip); g.lineTo(tip[0] - 16 * Math.cos(a - 0.45), tip[1] - 16 * Math.sin(a - 0.45)); g.lineTo(tip[0] - 16 * Math.cos(a + 0.45), tip[1] - 16 * Math.sin(a + 0.45)); g.closePath();
+      g.fillStyle = o.color; g.fill(); g.lineWidth = 2; g.strokeStyle = "#0b0f13"; g.stroke();
+    }
+    if (label) {
+      g.beginPath(); g.arc(o.from[0], o.from[1], 11, 0, Math.PI * 2); g.fillStyle = o.color; g.fill(); g.lineWidth = 2; g.strokeStyle = "#0b0f13"; g.stroke();
+      g.fillStyle = "#0b0f13"; g.font = '600 13px "JetBrains Mono", monospace'; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(label, o.from[0], o.from[1] + 1);
+    }
+  }
+  function button(on) {
+    g.beginPath(); g.roundRect ? g.roundRect(BTN.x, BTN.y, BTN.w, BTN.h, 6) : g.rect(BTN.x, BTN.y, BTN.w, BTN.h);
+    g.fillStyle = on ? "#0f3f8a" : "#1f5fbf"; g.fill(); g.lineWidth = 2; g.strokeStyle = "#ffffff"; g.stroke();
+    g.fillStyle = "#ffffff"; g.font = '700 14px "Atkinson Hyperlegible", sans-serif'; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("Save and next", BTN.x + BTN.w / 2, BTN.y + BTN.h / 2 + 1);
+  }
+  function pointer(p, down) {
+    g.beginPath(); g.arc(p[0], p[1], down ? 9 : 14, 0, Math.PI * 2); g.fillStyle = down ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.2)"; g.fill();
+    g.lineWidth = 2.5; g.strokeStyle = "#ffffff"; g.stroke(); g.lineWidth = 1; g.strokeStyle = "#0b0f13"; g.beginPath(); g.arc(p[0], p[1], (down ? 9 : 14) + 1.5, 0, Math.PI * 2); g.stroke();
+  }
+  // timeline of one example, seconds
+  const T = { clip: 2.4, toA: 3.3, pressA: 3.7, dragA: 5.0, upA: 5.7, toB: 6.6, pressB: 7.0, dragB: 8.3, upB: 9.0, toBtn: 9.9, press: 10.3, end: 11.8 };
+  const home = [330, 60], btnC = [BTN.x + BTN.w / 2, BTN.y + BTN.h / 2];
+  function frame(S, t) {
+    g.setTransform(cv.width / W, 0, 0, cv.height / H, 0, 0);
+    const A = S.A, B = S.B, m = S.m;
+    let clipT = null, a = 0, b = 0, la = "", lb = "", ptr = null, down = false, btn = false, msg;
+    if (t < T.clip) { clipT = ease((t % 1.2) / 1.0); msg = m.clip; }
+    else if (t < T.toA) { ptr = lerp(home, A.from, ease((t - T.clip) / (T.toA - T.clip))); msg = m.a0; }
+    else if (t < T.pressA) { ptr = A.from; down = true; msg = m.a0; }
+    else if (t < T.dragA) { a = ease((t - T.pressA) / (T.dragA - T.pressA)); ptr = lerp(A.from, A.to, a); down = true; msg = m.a1; }
+    else if (t < T.upA) { a = 1; la = "1"; ptr = A.to; msg = m.a2; }
+    else if (t < T.toB) { a = 1; la = "1"; ptr = lerp(A.to, B.from, ease((t - T.upA) / (T.toB - T.upA))); msg = m.b; }
+    else if (t < T.pressB) { a = 1; la = "1"; ptr = B.from; down = true; msg = m.b; }
+    else if (t < T.dragB) { a = 1; la = "1"; b = ease((t - T.pressB) / (T.dragB - T.pressB)); ptr = lerp(B.from, B.to, b); down = true; msg = m.b; }
+    else if (t < T.upB) { a = b = 1; la = "1"; lb = "2"; ptr = B.to; msg = m.done; }
+    else if (t < T.toBtn) { a = b = 1; la = "1"; lb = "2"; ptr = lerp(B.to, btnC, ease((t - T.upB) / (T.toBtn - T.upB))); msg = m.save; }
+    else { a = b = 1; la = "1"; lb = "2"; ptr = btnC; down = t < T.press + 0.35; btn = down; msg = m.save; }
+    S.draw(clipT); arrow(A, a, la); arrow(B, b, lb);
+    if (t >= T.upB) button(btn);
+    if (ptr) pointer(ptr, down);
+    if (step.textContent !== msg) step.textContent = msg;
+  }
+  if (still) {   // no motion: the finished second example, with both rules in words
+    const fixed = () => { size(); frame(SCENES[1], T.upB - 0.01); step.textContent = "Example: the camera moved, so the background gets one arrow; the ball moved its own way and gets another."; };
+    fixed(); window.addEventListener("resize", fixed); return;
+  }
+  let t0 = null;
+  function tick(now) {
+    if ($("intro").hidden) return;                 // stop once drawing has started
+    if (t0 === null) t0 = now;
+    const t = (now - t0) / 1000;
+    size(); frame(SCENES[Math.floor(t / T.end) % SCENES.length], t % T.end);
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
+</body></html>
