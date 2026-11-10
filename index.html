@@ -100,7 +100,7 @@ th { font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; colo
       <div class="demostep" id="demostep">Example: one arrow on each part that moved.</div>
       <figcaption class="cap">Two made-up pictures, not study photos: a still camera, then a moving camera. Your arrows do not need to match these in length or position.</figcaption>
     </figure>
-    <p class="hint">26 photos, about 20 minutes, plus 21 optional ones at the end if you have time; you can stop at any point and come back later. Please do not look at anyone else's arrows. What is stored: your arrows, the time you drew them, a random id kept in this browser and the initials you type below (optional); no name, email or address. They are used only to test arrow-controlled video generation. If your arrows cannot be saved from your link, the page asks you to send them yourself at the end.</p>
+    <p class="hint">26 photos, about 20 minutes, plus 21 optional ones at the end if you have time; you can stop at any point and come back later. Please do not look at anyone else's arrows. What is stored: your arrows, the time you drew them, a random id kept in this browser and the initials you type below (optional); no name, email or address. They are used only to test arrow-controlled video generation. They are sent to the researchers each time you press Save and next.</p>
     <div class="row">
       <label class="field" for="initials">Initials (optional)<input type="text" id="initials" maxlength="6" autocomplete="off"></label>
       <button type="button" class="primary" id="start">Start drawing</button>
@@ -164,7 +164,7 @@ th { font-size: 0.74rem; letter-spacing: 0.06em; text-transform: uppercase; colo
 <script>
 const $ = (id) => document.getElementById(id);
 const COLORS = ["#ffb000", "#2fd4ef", "#ff6fb5", "#9be15d", "#c9a7ff"];
-const SUBMIT_URL = "";         // public copy only (build_pages_site.py): where each saved photo is posted
+const SUBMIT_URL = "https://script.google.com/macros/s/AKfycbxpODVXIazRSJy3RIx79v5d4EyfMPvc5nmENA-6XOu01rxXeA-Zyg-bcA8gJHA7yi4m/exec";         // public copy only (build_pages_site.py): where each saved photo is posted
 const PROTOCOL = "E19-A v3";   // v3 (A367): Adobe240 photos from the held-out recordings; v2 (A185): free drawing, no regions shown
 const MAX_ARROWS = 5;
 const MIN_PX = 12;             // shortest accepted arrow, in pixels of the 1280-wide photo
